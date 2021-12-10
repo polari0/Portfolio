@@ -48,9 +48,6 @@ namespace AngelTears
         //Moves the demon bit behind the player character. 
         internal void PitchFork()
         {
-            print("are we pithcforking" + spawner_Script.collectTears);
-            MeshCollider d = demon.GetComponent<MeshCollider>();
-
             if (spawner_Script.collectTears < 10)
             {
                 Instantiate(pitchFork, d.transform.position, transform.rotation);
@@ -59,8 +56,7 @@ namespace AngelTears
             {
                 hasGameStarted = false;
             }
-            //Self note While loop crahes the game. Unless you exit it. 
-            //Do this demon thing in update call Hasplayertouched bool from SceneStart and do it with that later on maybe tomorrow. 
+            //spawns new pitchfork
         }
         internal IEnumerator StartPitchFork()
         {
@@ -68,19 +64,6 @@ namespace AngelTears
             yield return new WaitForSeconds(1);
             PitchFork();
             haveWePitchForked = false;
-            //print("Cuorinte works");
-            //yield return new WaitForSeconds(2);
-            //Wait for seconds script. 
-            //if (Mathf.Abs(distance) < 0.1f && hasGameStarted == true)
-            //{
-            //    print("Cuorinte works");
-            //    PitchFork();
-            //    yield return new WaitForSeconds(2);
-            //    Destroy(GameObject.FindGameObjectWithTag("pitchFork"));
-            //}
         }
     } 
 }
-//So what you want still to do is instantiate object at specific position aka on the demon the fire it spews up. First you need to intantiate the demon to the object should be done on game start 
-//function. 
-//Then get that demon sprite and make it do stuff
