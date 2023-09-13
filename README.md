@@ -1,8 +1,11 @@
 # Portfolio
-Portfolio 
-Hi Im Ilmari Vainio game programmer and Student. 
-Here you can find my scripts in one easy to navigate location. Each project has it's own folder and under it are the scripts for that project. Not much to see yet
+
+This repository acts as my collection of functionalities I wrote for differnt projects that never saw the light of day. However if parts 
+of them were good in my opinion they end up here to be used at later time. It also serves as form of portfolio for code snippets. 
+
 
 Contact information
 Email
 ilmari.vainio01@gmail.com
+linked In Ilmari Vainio 
+https://www.linkedin.com/in/ilmari-vainio-44494521a/
