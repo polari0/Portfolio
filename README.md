@@ -7,5 +7,5 @@ of them were good in my opinion they end up here to be used at later time. It al
 Contact information
 Email
 ilmari.vainio01@gmail.com
-linked In Ilmari Vainio 
-https://www.linkedin.com/in/ilmari-vainio-44494521a/
+linkedin [Ilmari Vainio](https://www.linkedin.com/in/ilmari-vainio-44494521a/)
+
