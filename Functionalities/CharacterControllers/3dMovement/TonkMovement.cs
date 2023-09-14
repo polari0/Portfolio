@@ -19,8 +19,7 @@ public class TonkMovement : MonoBehaviour
     private Rigidbody rb;
     [SerializeField]
     private int speed;
-    [SerializeField]
-    private Vector2 moveDirection;
+
 
     private void Awake()
     {
@@ -68,6 +67,6 @@ public class TonkMovement : MonoBehaviour
     private void Update()
     {
         Vector2 moveVector = moveAction.ReadValue<Vector2>();
-        rb.transform.position = transform.position + new Vector3(moveVector.x * _sparklerStats.speed * Time.deltaTime, 0, moveVector.y * _sparklerStats.speed * Time.deltaTime);
+        rb.transform.position = transform.position + new Vector3(moveVector.x, 0, moveVector.y)* _sparklerStats.speed * Time.deltaTime;
     }
 }
