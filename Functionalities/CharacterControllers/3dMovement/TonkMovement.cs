@@ -25,11 +25,11 @@ public class TonkMovement : MonoBehaviour
     private void Awake()
     {
         //Here we find all the actions needed for the inputs so we are able to use them. 
-        moveAction = actionsAsset.FindActionMap("MovementInputs").FindAction("Move");
-        actionsAsset.FindActionMap("MovementInputs").FindAction("Jump");
-        actionsAsset.FindActionMap("MovementInputs").FindAction("Crouch");
-        actionsAsset.FindActionMap("MovementInputs").FindAction("Use");
-        actionsAsset.FindActionMap("MovementInputs").FindAction("Roll");
+        moveAction = actionsAsset.FindActionMap("MovementInputs").FindAction("Move") ;
+        actionsAsset.FindActionMap("MovementInputs").FindAction("Jump").performed += OnJump;
+        actionsAsset.FindActionMap("MovementInputs").FindAction("Crouch").performed += OnCrouch;
+        actionsAsset.FindActionMap("MovementInputs").FindAction("Use").performed += OnUse;
+        actionsAsset.FindActionMap("MovementInputs").FindAction("Roll").performed += OnRoll;
     }
 
     private void OnEnable()
