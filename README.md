@@ -1,8 +1,7 @@
 # Portfolio
 
-This repository acts as my collection of functionalities I wrote for differnt projects that never saw the light of day. However if parts 
-of them were good in my opinion they end up here to be used at later time. It also serves as form of portfolio for code snippets. 
-
+This repository acts as my code Portfolio as well as collection of functionalities that I thought were made well enough to be re used in future projects 
+If you want to see the projects them selfs take a loot at my [Itch.io Page](https://polari0.itch.io/) 
 
 Contact information
 Email
