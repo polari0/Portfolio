@@ -9,51 +9,34 @@
 // Edited the entire code to fit the New unity Input system with this code depending on how the Input asset is set up Toggle and Hold both work
 // Deleted the unused code to make things more clear || Version 1.0.3
 
-//using System.Collections;
-//using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-//using UnityEngine.EventSystems;
-//using UnityEngine.InputSystem.Android;
-using HexKeyGames;
 
 #if UNITY_EDITOR
 using UnityEditor;
-    using System.Net;
+//using System.Net;
 #endif
+
 namespace HexKeyGames
 {
     namespace CharacterMovement
     {
         public class FirstPersonController : MonoBehaviour
         {
+            public InputActionAsset CharacterControlsActionAsset;
+
             private Rigidbody rb;
             private CapsuleCollider capsuleCollider;
-            public InputActionAsset characterControlsActionAsset;
             private InputAction moveAction;
-
-
-            #region Interaction variables
-            [SerializeField]
-            internal GameObject interactableUIElement;
-            [SerializeField]
-            internal float interactRange = 10f;
-            internal float maxInteractRange = 40;
-            private Ray ray;
-            //private IInteractable interactable;
-            //private IInteractable2 secondaryInteractable;
-            #endregion
-
+            private InputAction cameraMoveAction;
 
             #region Camera Movement Variables
-
             public Camera playerCamera;
-
             public float fov = 60f;
             public bool invertCamera = false;
             public bool cameraCanMove = true;
-            public float mouseSensitivity = 2f;
+            public float mouseSensitivity = 0.2f;
             public float maxLookAngle = 50f;
 
             // Crosshair
@@ -66,6 +49,7 @@ namespace HexKeyGames
             private float yaw = 0.0f;
             private float pitch = 0.0f;
             private Image crosshairObject;
+            public Vector2 mouseDeltaInput;
 
             #region Camera Zoom Variables
 
@@ -182,13 +166,13 @@ namespace HexKeyGames
                 }
 
                 #region New Input system event subscriptions
-                moveAction = characterControlsActionAsset.FindActionMap("CharacterController").FindAction("Movement");
-                characterControlsActionAsset.FindActionMap("CharacterController").FindAction("Interact").performed += OnInteract;
-                characterControlsActionAsset.FindActionMap("CharacterController").FindAction("SecondaryInteract").performed += OnSecondaryInteract;
-                characterControlsActionAsset.FindActionMap("CharacterController").FindAction("Jump").performed += OnJump;
-                characterControlsActionAsset.FindActionMap("CharacterController").FindAction("Crouch").performed += OnCrouch;
-                characterControlsActionAsset.FindActionMap("CharacterController").FindAction("Sprint").performed += OnSprint;
-                characterControlsActionAsset.FindActionMap("CharacterController").FindAction("CameraZoom").performed += OnCameraZoom;
+                moveAction = CharacterControlsActionAsset.FindActionMap("Character").FindAction("Move");
+                cameraMoveAction = CharacterControlsActionAsset.FindActionMap("Character").FindAction("Look");
+                CharacterControlsActionAsset.FindActionMap("Character").FindAction("Jump").performed += OnJump;
+                CharacterControlsActionAsset.FindActionMap("Character").FindAction("Crouch").performed += OnCrouch;
+                CharacterControlsActionAsset.FindActionMap("Character").FindAction("Sprint").performed += OnSprint;
+                CharacterControlsActionAsset.FindActionMap("Character").FindAction("Zoom").performed += OnZoom;
+
                 #endregion
             }
 
@@ -197,12 +181,12 @@ namespace HexKeyGames
             //Make sure we have the input asset enabled 
             private void OnEnable()
             {
-                characterControlsActionAsset.FindActionMap("CharacterController").Enable();
+                CharacterControlsActionAsset.FindActionMap("Character").Enable();
             }
 
             private void OnDisable()
             {
-                characterControlsActionAsset.FindActionMap("CharacterController").Disable();
+                CharacterControlsActionAsset.FindActionMap("Character").Disable();
             }
             #endregion
 
@@ -256,32 +240,9 @@ namespace HexKeyGames
             }
 
             #region different actions and what they do
-            //We cast a new ray to interact with the current object
-            private void OnInteract(InputAction.CallbackContext context)
-            {
-                if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
-                {
-                    IInteractablePrimary interactable = hit.collider.GetComponent<IInteractablePrimary>();
-                    if (interactable != null)
-                    {
-                        interactable.Interact();
-                    }
-                }
-            }
-            private void OnSecondaryInteract(InputAction.CallbackContext context)
-            {
-                if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
-                {
-                    IInteractable2 interactable = hit.collider.GetComponent<IInteractable2>();
-                    if (interactable != null)
-                    {
-                        interactable.SecondaryInteractable();
-                    }
-                }
-            }
-            //Bellow this comment everything is from the original assets and thus will still need the prefab for that.
             private void OnJump(InputAction.CallbackContext context)
             {
+                
                 if (enableJump)
                 {
                     CheckGround();
@@ -306,7 +267,7 @@ namespace HexKeyGames
                     sprinting = false;
                 }
             }
-            private void OnCameraZoom(InputAction.CallbackContext context)
+            private void OnZoom(InputAction.CallbackContext context)
             {
                 if (!isZoomed)
                 {
@@ -319,26 +280,26 @@ namespace HexKeyGames
             }
             #endregion
 
-            //float camRotation;
-
             private void Update()
             {
+                mouseDeltaInput = cameraMoveAction.ReadValue<Vector2>();
+                moveDirection = moveAction.ReadValue<Vector2>().normalized;
 
                 #region Camera
 
                 // Control camera movement
                 if (cameraCanMove)
                 {
-                    yaw = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mouseSensitivity;
+                    yaw = transform.localEulerAngles.y + mouseDeltaInput.x * mouseSensitivity;
 
                     if (!invertCamera)
                     {
-                        pitch -= mouseSensitivity * Input.GetAxis("Mouse Y");
+                        pitch -= mouseSensitivity * mouseDeltaInput.y;
                     }
                     else
                     {
                         // Inverted Y
-                        pitch += mouseSensitivity * Input.GetAxis("Mouse Y");
+                        pitch += mouseSensitivity * mouseDeltaInput.y;
                     }
 
                     // Clamp pitch between lookAngle
@@ -422,8 +383,6 @@ namespace HexKeyGames
                 {
                     HeadBob();
                 }
-
-                moveDirection = moveAction.ReadValue<Vector2>().normalized;
             }
 
             void FixedUpdate()
@@ -499,25 +458,6 @@ namespace HexKeyGames
                         rb.AddForce(velocityChange, ForceMode.VelocityChange);
                     }
                 }
-
-                #endregion
-
-                #region raycast
-                ray = new Ray
-                {
-                    origin = playerCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0)),
-                    direction = playerCamera.transform.forward
-                };
-                if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
-                {
-                    if (hit.collider.gameObject.GetComponent<IInteractable>() != null)
-                    {
-                        interactableUIElement.SetActive(true);
-                    }
-                    else
-                        interactableUIElement.SetActive(false);
-                }
-
                 #endregion
             }
 
@@ -530,7 +470,7 @@ namespace HexKeyGames
 
                 if (Physics.Raycast(origin, direction, out RaycastHit hit, distance))
                 {
-                    Debug.DrawRay(origin, direction * distance, Color.red);
+                    //Debug.DrawRay(origin, direction * distance, Color.red);
                     isGrounded = true;
                 }
                 else
@@ -542,11 +482,12 @@ namespace HexKeyGames
             private void Jump()
             {
                 // Adds force to the player rigidbody to jump
-                //if (isGrounded)
-                //{
-                rb.AddForce(0f, jumpPower, 0f, ForceMode.Impulse);
-                isGrounded = false;
-                //}
+                if (isGrounded)
+                {
+
+                    rb.AddForce(0f, jumpPower * rb.mass, 0f, ForceMode.Impulse);
+                    isGrounded = false;
+                }
 
                 // When crouched and using toggle system, will uncrouch for a jump
                 if (isCrouched && !holdToCrouch)
@@ -641,7 +582,7 @@ namespace HexKeyGames
                 GUILayout.Label("Camera Setup", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, fontSize = 13 }, GUILayout.ExpandWidth(true));
                 EditorGUILayout.Space();
 
-                fpc.characterControlsActionAsset = (InputActionAsset)EditorGUILayout.ObjectField(new GUIContent("Input action asset", "Player Input actions."), fpc.characterControlsActionAsset, typeof(InputActionAsset), true);
+                fpc.CharacterControlsActionAsset = (InputActionAsset)EditorGUILayout.ObjectField(new GUIContent("Input action asset", "Player Input actions."), fpc.CharacterControlsActionAsset, typeof(InputActionAsset), true);
                 fpc.playerCamera = (Camera)EditorGUILayout.ObjectField(new GUIContent("Camera", "Camera attached to the controller."), fpc.playerCamera, typeof(Camera), true);
                 fpc.fov = EditorGUILayout.Slider(new GUIContent("Field of View", "The camera’s view angle. Changes the player camera directly."), fpc.fov, fpc.zoomFOV, 179f);
                 fpc.cameraCanMove = EditorGUILayout.ToggleLeft(new GUIContent("Enable Camera Rotation", "Determines if the camera is allowed to move."), fpc.cameraCanMove);
@@ -810,16 +751,6 @@ namespace HexKeyGames
 
                 #endregion
 
-                #region Interaction setup
-
-                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-                GUILayout.Label("Interaction Setup", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, fontSize = 13 }, GUILayout.ExpandWidth(true));
-                EditorGUILayout.Space();
-
-                fpc.interactRange = EditorGUILayout.Slider(new GUIContent("Interaction Range", "Determines from how far player can interact with objects."), fpc.interactRange, .1f, fpc.maxInteractRange);
-                fpc.interactableUIElement = (GameObject)EditorGUILayout.ObjectField(new GUIContent("InteractionUI", "UIElement that should pop up when looking at interactable object."), fpc.interactableUIElement, typeof(GameObject), true);
-                #endregion
-
                 //Sets any changes from the prefab
                 if (GUI.changed)
                 {
@@ -828,7 +759,7 @@ namespace HexKeyGames
                     SerFPC.ApplyModifiedProperties();
                 }
             }
-        } 
-    }
+        }
 #endif 
+    }
 }

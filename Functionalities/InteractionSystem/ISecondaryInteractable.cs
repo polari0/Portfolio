@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace HexKeyGames
 {
-    public interface IInteractable2 : IInteractable
+    public interface ISecondaryInteractable : IInteractable
     {
-        void SecondaryInteractable();
+        void SecondaryInteract();
     }
 }
