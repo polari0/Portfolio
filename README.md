@@ -1,7 +1,7 @@
 # Portfolio
 
 This repository acts as my code Portfolio as well as collection of functionalities that I thought were made well enough to be re used in future projects 
-If you want to see the projects them selfs take a loot at my [Itch.io Page](https://polari0.itch.io/) 
+If you want to see the projects them selfs feel free to take a loot at my [Itch.io Page](https://polari0.itch.io/) 
 
 Contact information
 Email
